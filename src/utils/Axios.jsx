@@ -1,15 +1,13 @@
 import axios from 'axios';
+import LocalStorageService from './LocalStorage';
 
-const API_ENDPOINT = process.env.API_ENDPOINT
-
+const API_ENDPOINT = 'http://localhost:8000';
 axios.defaults.baseURL = API_ENDPOINT;
-// axios.defaults.headers.common['Authorization'] = 'AUTH TOKEN';
-axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 axios.interceptors.request.use(
   config => {
     if (!config.headers.Authorization) {
-      const token = JSON.parse(localStorage.getItem("keyCloak")).token;
+      const token = LocalStorageService.getItemValue('token');
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;

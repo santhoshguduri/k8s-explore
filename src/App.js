@@ -1,6 +1,10 @@
 import logo from './logo.svg';
 import './App.css';
 import * as React from 'react';
+import {
+  RouterProvider,
+} from "react-router-dom";
+import {router} from './routes/config'
 
 
 function App() {
@@ -10,7 +14,7 @@ function App() {
 
   return (
     <div className="App">
-      
+      <RouterProvider router={router} />
     </div>
   );
 }

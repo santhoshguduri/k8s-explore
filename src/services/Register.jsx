@@ -1,9 +1,9 @@
-import AxiosInstance from '../utils/Axios'
+import axios from 'axios'
 
 export const registerUser = (userData) =>{
-    return AxiosInstance({
+    return axios({
         method: 'Post',
-        url: '/user',
+        url: 'http://localhost:8000/user',
         data: userData
     })
 }

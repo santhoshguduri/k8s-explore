@@ -1,10 +1,10 @@
-import AxiosInstance from '../utils/Axios'
+import axios from 'axios'
 
 
 export const loginUser = (credential) =>{
-    return AxiosInstance({
+    return axios({
         method: 'Post',
-        url: '/login',
+        url: 'http://localhost:8000/login',
         data: credential
     })
 }
