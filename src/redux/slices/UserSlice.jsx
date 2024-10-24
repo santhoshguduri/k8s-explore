@@ -4,7 +4,7 @@ const initialState = {
     firstname: '',
     lastname: '',
     email: '',
-    id: '',
+    uuid: '',
   }
 
 export const currentUserSlice = createSlice({
@@ -12,7 +12,11 @@ export const currentUserSlice = createSlice({
   initialState,
   reducers: {
     updateUser: (state, action) => {
-      state = action.payload;
+      const { firstname, lastname, email, id } = action.payload;
+      state.firstname = firstname;
+      state.lastname = lastname;
+      state.email = email;
+      state.uuid = id;
     },
     clearUser: (state, action) => {
       state = null
