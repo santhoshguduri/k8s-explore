@@ -19,7 +19,7 @@ const theme = createTheme({
   },
 });
 
-function FormInput({ label, name, type, variant, required, onChangeFn }) {
+function FormInput({ label, name, type, variant, required, disabled, error, value, slotProps, helperText, onChangeFn }) {
   return (
     <ThemeProvider theme={theme}>
       <TextField
@@ -45,7 +45,12 @@ function FormInput({ label, name, type, variant, required, onChangeFn }) {
         margin="normal"
         // size="small"
         name={name}
+        disabled={disabled}
         required={required}
+        error={error}
+        slotProps={slotProps}
+        helperText={helperText}
+        defaultValue={value}
         onChange={(ev, val)=>onChangeFn(ev, val)}
       />
     </ThemeProvider>

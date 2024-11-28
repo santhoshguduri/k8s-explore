@@ -1,11 +1,18 @@
-import axios from 'axios'
+import axios from '../utils/Axios'
 
 
-export const loginUser = (credential) =>{
+export const loginUser = (tokenData) =>{
     return axios({
         method: 'Post',
         url: 'http://localhost:8000/login',
-        data: credential
+        data: tokenData
     })
 }
 
+export const sendOtpExistingUser = (userData) =>{
+    return axios({
+        method: 'Post',
+        url: 'http://localhost:8000/otp/existing-user/send',
+        data: userData
+    })
+}

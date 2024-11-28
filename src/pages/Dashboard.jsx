@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../redux/slices/UserSlice';
 import { getLoggedProfile } from '../services/User';
+import { LogoutUser } from '../services/OAuth';
 
 export const Dashboard = () => {
 
@@ -18,12 +19,14 @@ export const Dashboard = () => {
             console.log(res)
             dispatch(updateUser(res.data));
             // navigate('/app/dashboard')
-        });
-    })
+        }).catch((err)=>console.log(err));
+    },[])
 
     const onClickLogout = () =>{
-        removeToken();
-        navigate('/login');
+        LogoutUser().then(()=>{
+
+            navigate('/login');
+        })
     }
     
     return <div>

@@ -5,23 +5,32 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { Button, Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography, CircularProgress } from "@mui/material";
+import Button from '../common/Button'
+import { loadStripe } from "@stripe/stripe-js";
+import { verifyCard } from "../../services/Register";
+import { useSelector } from "react-redux";
+import AlertSlider from "../common/AlertSlider";
+import { useNavigate } from "react-router-dom";
 
 // Load Stripe (Replace with your Publishable Key)
+const stripePromise = loadStripe("pk_test_51QP5dDKgrLAHVIRdqsv7t6G2N30tWlgn2RJtB4bi2Z9zryMGMqhOjEMro50AAUoKxGqdKBGRGBK36jA4UxJQZzCG006XVApTzJ");
+
 
 const CreditCardForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [alertStatus, setAlertStatus] = React.useState({open: false, message: '', severity: ''});
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const navigate = useNavigate();
+  const currentUser = useSelector(state=> state.currentUser);
+
+  const handleSubmit = () => {
+    // event.preventDefault();
     setLoading(true);
-    setMessage("");
 
     if (!stripe || !elements) {
-      setMessage("Stripe is not loaded yet.");
       setLoading(false);
       return;
     }
@@ -29,48 +38,47 @@ const CreditCardForm = () => {
     const cardElement = elements.getElement(CardElement);
 
     // Create a Payment Method (tokenization)
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
+    stripe.createPaymentMethod({
       type: "card",
       card: cardElement,
+    }).then(({error, paymentMethod})=>{
+        if (error) {
+            setAlertStatus({
+                open: true,
+                message: 'Error processing card details',
+                severity: 'error'
+              })
+            throw new Error('')
+        }
+        return verifyCard({paymentMethodId: paymentMethod.id, email: currentUser.email })
+    }).then((res)=>{
+        console.log(res);
+        setAlertStatus({
+            open: true,
+            message: 'Card verified and saved successfully!',
+            severity: 'success'
+          })
+        // setMessage("Card verified and saved successfully!");
+        setLoading(false);
+        navigate('/app/dashboard');
+    }).catch((err)=>{
+        console.log(err);
+        // setMessage(`Error: ${err}`);
+        setLoading(false);
     });
 
-    if (error) {
-      setMessage(error.message);
-      setLoading(false);
-      return;
-    }
-
-    // Send paymentMethod.id to your backend for verification and saving
-    const response = await fetch("/api/verify-card", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paymentMethodId: paymentMethod.id }),
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      setMessage("Card verified and saved successfully!");
-    } else {
-      setMessage(`Error: ${result.error}`);
-    }
-    setLoading(false);
   };
 
   return (
-    <Box
-      sx={{
-        // maxWidth: 500,
-        // margin: "auto",
-        padding: 2,
-        // boxShadow: 3,
-        borderRadius: 2,
-        border:"1px solid #9E9E9E",
-        // backgroundColor: "white",
-      }}
-    >
-      <form onSubmit={handleSubmit}>
-        <Box>
+    <Box>
+      <form>
+        <Box
+            sx={{
+                padding: 2,
+                borderRadius: 2,
+                border:"1px solid #9E9E9E",
+                marginBottom: '12px'
+              }}>
           <CardElement
             options={{
               style: {
@@ -86,14 +94,27 @@ const CreditCardForm = () => {
         </Box>
         
       </form>
-      {message && (
-        <Typography color={message.startsWith("Error") ? "error" : "success"} mt={2}>
-          {message}
-        </Typography>
-      )}
+      <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          text='Start Free Trial'
+          loading={loading}
+          onClickFn={()=>handleSubmit()}
+        />
+      <AlertSlider message={alertStatus.message} severity={alertStatus.severity} open={alertStatus.open} onClose={()=>{setAlertStatus({open: false});}}/>
+
     </Box>
   );
 };
 
 
-export default CreditCardForm;
+const CreditCardFormWrapper = () => {
+    return(
+        <Elements stripe={stripePromise}>
+          <CreditCardForm />
+        </Elements>
+    )
+};
+
+export default CreditCardFormWrapper;

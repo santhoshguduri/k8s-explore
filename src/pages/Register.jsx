@@ -43,12 +43,12 @@ import FreeTrialForm from "../components/common/TrialRegistration";
 
 function RegisterPage() {
 
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(1);
 
   const handleFormStep=()=>{
     switch(step){
         case 1:
-            return <Register/>;
+            return <Register setStep={(val)=>setStep(val)}/>;
         case 2:
             return <FreeTrialForm/>
     }

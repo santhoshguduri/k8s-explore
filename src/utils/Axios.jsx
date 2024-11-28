@@ -3,6 +3,7 @@ import LocalStorageService from './LocalStorage';
 
 const API_ENDPOINT = 'http://localhost:8000';
 axios.defaults.baseURL = API_ENDPOINT;
+axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(
   config => {

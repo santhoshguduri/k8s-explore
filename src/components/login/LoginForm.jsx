@@ -38,74 +38,152 @@
                     //     </div>
                     // }
                     
-import React from "react";
-import { Checkbox, Typography, Box, Divider, Link } from "@mui/material";
+import React, { useState } from "react";
+import { Checkbox, Typography, Box, Divider, Link, InputAdornment } from "@mui/material";
 import FormInput, {InputVarient} from "../common/FormInput";
 import GoogleButton from "../common/GoogleButton";
 import Button from '../common/Button';
 import logo from '../../assets/images/brand-logo.png';
 import AlertSlider from "../common/AlertSlider";
 import {useNavigate} from 'react-router-dom';
-import { loginUser } from '../../services/Login';
+import { loginUser, sendOtpExistingUser } from '../../services/Login';
 import { getLoggedProfile } from '../../services/User';
 import LocalStorageService from '../../utils/LocalStorage'
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/slices/UserSlice';
+import { oAuthLogin } from "../../services/OAuth";
+import { resendOtp, verifyOtp } from "../../services/Register";
+import OTPInput from "../common/OtpInput";
+import { CheckCircle } from "@mui/icons-material";
 
 
 function SignInForm() {
   const [logedIn, setLoginIn] = React.useState(false);
+  const [userEmail, setUserEmail] = useState({value:'', error: false});
   const [alertStatus, setAlertStatus] = React.useState({open: false, message: '', severity: ''});
-
-
-  const handleSuccess = (token) =>{
-    fetch("http://localhost:8000/api/auth/google", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token }),
-      })
-        .then((res) => res.json())
-        .then((data) => console.log("Server Response:", data))
-        .then(()=> setAlertStatus({open: true, message: 'Login Succussfull!', severity: 'success'}))
-        .catch((err) => console.error("Error:", err));
-  }
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isVerifyLoading, setVerifyLoading] = useState(false);
+  const [isGeneratingOtp, setGeneratingOtp] = useState(false);
+  const [otp, setOtp] = useState('');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [userData, setUserData] = React.useState({username: '', password: ''})
-
-  const onClickRegister = () =>{
-    // ev.preventDefault();
-    
-    loginUser(userData).then((res)=>{
-        LocalStorageService.setItemValue('token', res.data.access_token);
-    }).then(()=>{
-        return getLoggedProfile()
-    }).then((res)=>{
-        console.log(res)
+  const handleOAuthSuccess = (token) =>{
+    oAuthLogin({token})
+      .then((res) => {
+        setAlertStatus({open: true, message: 'Login Succussfull!', severity: 'success'});
         dispatch(updateUser(res.data));
-        navigate('/app/dashboard')
+        navigate('/app/dashboard');
+      })
+      .catch((err) => console.error("Error:", err));
+  }
+
+  const handleOauthFailure = () => {
+    setAlertStatus({
+      open: true,
+      message: 'Error trying to sign-in!',
+      severity: 'error'
+    })
+  }
+
+  const handleSendOtp = () =>{
+    setGeneratingOtp(true)
+    if(!userEmail.error){
+
+      sendOtpExistingUser({email: userEmail.value}).then((res)=>{
+        console.log(res)
+        setAlertStatus({
+          open: true,
+          message: 'OTP sent. Please check your email!',
+          severity: 'success'
+        })
+        setIsOtpSent(true);
+        setGeneratingOtp(false);
+      }).catch(err=>{
+        console.log(err);
+        if(err.status == 404){
+          setAlertStatus({
+              open: true,
+              message: `${err.response.data.detail}! `,
+              severity: 'error'
+          })
+        }
+        setGeneratingOtp(false);
+      });
+    }else{
+      setAlertStatus({
+        open: true,
+        message: 'Please provide valid details and try again!',
+        severity: 'error'
+      })
+      setGeneratingOtp(false);
+    }
+  }
+
+  const handleVerifyLoginOtp = (val=otp) =>{
+    // ev.preventDefault();
+    setVerifyLoading(true);
+    const loginData={
+      email: userEmail.value,
+      otp: val
+    }
+
+    loginUser(loginData).then(()=>{
+        navigate('/app/dashboard');
     }).catch((err)=>{
         console.log(err.status);
         if(err.status == 404){
             setAlertStatus({
                 open: true,
-                message: 'Login Failed! Incorrect Password.',
+                message: `${err.response.data.detail}`,
                 severity: 'error'
             })
         }
     });
   }
 
-    const handleChange = (name, val) => {
-        // console.log(name,val)
-        const curUser = userData;
-        curUser[name]= val;
-        setUserData(curUser);
+  const resendGeneratedOtp = () => {
+    resendOtp({email: userEmail.value}).then((res)=>{
+      console.log(res)
+      setAlertStatus({
+        open: true,
+        message: 'OTP sent successfully!',
+        severity: 'Success'
+    })
+    }).catch(err=>console.log(err));
+  }
+
+  // const handleOtpVerification = (val=otp) => {
+  //   setVerifyLoading(true);
+  //   const otpData={
+  //     email: userEmail.value,
+  //     otp: val
+  //   }
+  //   verifyOtp(otpData).then(()=>{
+  //     setVerifyLoading(false);
+  //     navigate('/app/dashboard');
+  //   }).catch((err)=>{
+  //     if(err.status == 404 || err.status == 400){
+  //       setAlertStatus({
+  //         open: true,
+  //         message: `${err.response.data.detail}!`,
+  //         severity: 'error'
+  //     })
+  //     console.log(err);
+  //     }
+  //     setVerifyLoading(false);
+  //   })
+  // }
+
+  const handleChangeEmail = (val) => {
+    const emailRegex = /^(?=.{1,256})[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/
+    let isValid=false;
+    if(!emailRegex.test(val)){
+      isValid = true;
     }
+    setUserEmail({value: val, error: isValid});
+  }
 
   return (
     <Box
@@ -135,17 +213,39 @@ function SignInForm() {
             type="email"
             name="username"
             required
+            disabled={isOtpSent}
             variant={InputVarient.outlined}
-            onChangeFn={(ev)=> handleChange(ev.target.name, ev.target.value)}
+            slotProps={isOtpSent &&{
+              input: {
+                endAdornment: (
+                  <InputAdornment>
+                    <CheckCircle sx={{color: '#91C862'}} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            onChangeFn={(ev)=> handleChangeEmail(ev.target.value)}
         />
-        <FormInput 
+        {/* <FormInput 
             label="Password"
             type="password"
             name="password"
             required
             variant={InputVarient.outlined}
             onChangeFn={(ev)=> handleChange(ev.target.name, ev.target.value)}
-        />
+        /> */}
+        {isOtpSent &&
+          <Box sx={{my: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}> 
+          <Box sx={{width: '80%', marginBottom: '16px'}}>
+            <OTPInput onChange={(val)=>setOtp(val)} onComplete={(val)=>handleVerifyLoginOtp(val)}/>
+          </Box>
+          <Typography variant="body2">
+            A 4-digit OTP is sent on your email address
+          </Typography>
+          <Typography variant="body2">
+            <Link href='#' onClick={()=>resendGeneratedOtp()}>Didn’t receive OTP? Resend</Link>
+          </Typography>
+        </Box>}
         <Box display="flex" alignItems="center">
           <Checkbox color="primary" />
           <Typography variant="body2">Remember me</Typography>
@@ -154,23 +254,19 @@ function SignInForm() {
           variant="contained"
         //   color="success"
           fullWidth
-          text="Get Started"
-          onClickFn={()=>onClickRegister()}
+          text={isOtpSent ? "Login":"Get Sign-in Code"}
+          disabled={isVerifyLoading || isGeneratingOtp}
+          loading={isVerifyLoading || isGeneratingOtp}
+          onClickFn={()=>{isOtpSent ? handleVerifyLoginOtp() : handleSendOtp()}}
         >
           
         </Button>
       </Box>
 
-      <Box sx={{ my: 3 }}>
-        <Typography variant="body2">
-          <Link href="/forgot-password" color="#000">Forgot your password?</Link> <br />
-          {/* <Link href="/resend-confirmation" color="#000"> Didn’t receive confirmation instructions?</Link> */}
-        </Typography>
-      </Box>
 
       <Divider sx={{ my: 3, color: '#9E9E9E', fontSize: '14px' }}>OR</Divider>
 
-      <GoogleButton successCallback={(token)=>handleSuccess(token)} />
+      <GoogleButton successCallback={(token)=>handleOAuthSuccess(token)} handleError={()=>handleOauthFailure()}/>
         <AlertSlider message={alertStatus.message} severity={alertStatus.severity} open={alertStatus.open} onClose={()=>setAlertStatus({open: false})}/>
     </Box>
   );

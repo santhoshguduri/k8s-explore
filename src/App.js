@@ -11,6 +11,8 @@ const theme = createTheme({
   palette: {
     primary: {
       main: '#91C862',
+      dark: '#91C862',
+      
       contrastText: '#fff',
     },
     secondary: {
@@ -20,6 +22,7 @@ const theme = createTheme({
   typography: {
     fontFamily: 'Poppins',
   },
+  
 });
 
 

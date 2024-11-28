@@ -1,43 +1,41 @@
-import React, { useEffect } from 'react';
+import React, {useState, useEffect } from 'react';
 import { useNavigate, Outlet} from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import { getToken, removeToken } from '../utils/Auth';
+import { verifyToken } from '../services/OAuth';
 
 const ProtectedRoute = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
   const navigate = useNavigate();
 
-  const isTokenValid = () => {
-    const token = getToken();
-    if (!token) {
-      return false;
-    }
-
+  const checkAuthentication = async () => {
     try {
-      const decodedToken = jwtDecode(token);
-      const currentTime = Date.now() / 1000;
-      if (decodedToken.exp < currentTime) {
-        removeToken();
-        return false;
+      const response = await verifyToken()
+      if (response.status === 200 && response.data.isAuthenticated) {
+        setIsAuthenticated(true);
+      } else {
+        throw new Error("Not authenticated");
       }
-      return true;
     } catch (error) {
-      console.error('Invalid token', error);
-      removeToken();
-      return false;
+      console.error("Authentication check failed", error);
+      setIsAuthenticated(false);
     }
   };
 
   useEffect(() => {
-    if (!isTokenValid()) {
-      navigate('/login');
-    }
-  }, [navigate]);
+    checkAuthentication();
+  }, []);
 
-  return (
-    <>
-      <Outlet />
-    </>
-  );
+  useEffect(() => {
+    if (isAuthenticated === false) {
+      navigate('/register'); // Redirect to login or register if not authenticated
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Display a loading indicator while authentication status is being checked
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>;
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

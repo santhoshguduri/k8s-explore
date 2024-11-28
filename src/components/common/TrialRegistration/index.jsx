@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 import {
   Box,
+  InputAdornment,
   Typography,
 } from '@mui/material';
-import {
-  Elements,
-} from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import TermsNotice from '../TermsNotice';
 import FormInput from '../FormInput';
-import Button from '../Button'
 import ToggleButton from '../ToggleButton';
 import CreditCardForm from '../../CreditCardForm';
+import { useDispatch, useSelector } from 'react-redux';
+import { CheckCircle } from '@mui/icons-material';
 
-const stripePromise = loadStripe("pk_test_51QP5dDKgrLAHVIRdqsv7t6G2N30tWlgn2RJtB4bi2Z9zryMGMqhOjEMro50AAUoKxGqdKBGRGBK36jA4UxJQZzCG006XVApTzJ");
 
 const FreeTrialForm = () => {
   const [billingCycle, setBillingCycle] = useState('monthly');
+
+  const currentUser = useSelector(state=> state.currentUser);
+
 
   const handleBillingCycleChange = (event, newCycle) => {
     if (newCycle) setBillingCycle(newCycle);
@@ -61,11 +61,57 @@ const FreeTrialForm = () => {
             gap: '8px',
           }}
         >
-          <FormInput label="First Name" fullWidth required />
-          <FormInput label="Last Name" fullWidth required />
+          <FormInput 
+            label="First Name" 
+            value={currentUser.firstname} 
+            disabled 
+            fullWidth 
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment>
+                    <CheckCircle sx={{color: '#91C862'}} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            required 
+          />
+          <FormInput 
+            label="Last Name" 
+            value={currentUser.lastname} 
+            disabled 
+            fullWidth 
+            required 
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment>
+                    <CheckCircle sx={{color: '#91C862'}} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
         </Box>
         <Box sx={{ marginBottom: 2 }}>
-          <FormInput label="Email Address" type="email" fullWidth required />
+          <FormInput 
+            label="Email Address" 
+            type="email" 
+            value={currentUser.email}
+            fullWidth 
+            required 
+            disabled
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment>
+                    <CheckCircle sx={{color: '#91C862'}} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
         </Box>
 
         {/* Payment Information */}
@@ -77,25 +123,17 @@ const FreeTrialForm = () => {
             margin: '8px 0'
           }}
         >
-          <Elements stripe={stripePromise}>
-            <CreditCardForm />
-          </Elements>
+          <CreditCardForm />
         </Box>
 
-        <Typography variant="body2" align='left' margin="16px 0px" >
+        {/* <Typography variant="body2" align='left' margin="16px 0px" >
           <a href="#tax" style={{ color: '#000' }}>
             Do you have a tax number?
           </a>
-        </Typography>
+        </Typography> */}
 
         {/* Submit Button */}
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          text='Start Free Trial'
-        //   onClickFn={()=>onClickRegister()}
-        />
+        
 
         <Typography>
           <TermsNotice /><Typography variant='caption' color="textSecondary"> and to receive marketing</Typography>
