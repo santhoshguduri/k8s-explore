@@ -1,34 +1,18 @@
 
-function appendListItem(key, obj) {
-  const list = this.getItemValue(key);
-  list.push(obj);
-  this.setItemValue(list);
+function getItem(key) {
+  return JSON.parse(window.localStorage.getItem(key)) || '';
 }
 
-function getItemValue(key) {
-  return JSON.parse(window.localStorage.getItem(key)) || [];
-}
-
-function getItemById(key, id) {
-  const list = this.getItemValue(key);
-  return list.find((person) => person.id === id);
-}
-
-function setItemValue(key, value) {
+function setItem(key, value) {
   window.localStorage.setItem(key, JSON.stringify(value));
 }
 
-function removeListItem(key, item) {
-  const listObj = this.getItemValue(key);
-  const index = listObj.indexOf(item);
-  listObj.splice(index, 1);
-  this.setItemValue(key, listObj);
+function deleteItem(key) {
+  window.localStorage.removeItem(key)
 }
 
 export default {
-  appendListItem,
-  getItemValue,
-  getItemById,
-  setItemValue,
-  removeListItem
+  getItem,
+  setItem,
+  deleteItem
 }

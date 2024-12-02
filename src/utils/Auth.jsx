@@ -1,7 +1,21 @@
-export const getToken = () => {
-    return localStorage.getItem('token'); // or sessionStorage.getItem('token')
+import LocalStorage from "./LocalStorage";
+
+const auth_key = 'access_token';
+
+const getToken = () => {
+    return LocalStorage.getItem(auth_key);
   };
   
-  export const removeToken = () => {
-    return localStorage.removeItem('token'); // or sessionStorage.removeItem('token')
-  };
+const removeToken = () => {
+  return LocalStorage.deleteItem(auth_key);
+};
+
+const setToken = (value) => {
+  return LocalStorage.setItem(auth_key, value)
+}
+
+export default {
+  getToken,
+  setToken,
+  removeToken
+}

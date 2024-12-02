@@ -140,6 +140,7 @@ function SignInForm() {
                 severity: 'error'
             })
         }
+        setVerifyLoading(false);
     });
   }
 
