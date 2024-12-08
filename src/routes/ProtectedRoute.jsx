@@ -3,6 +3,9 @@ import { useNavigate, Outlet, Navigate} from 'react-router-dom';
 import { refreshToken, verifyToken } from '../services/OAuth';
 import { jwtDecode } from 'jwt-decode';
 import auth from '../utils/Auth';
+import { Box } from '@mui/material';
+import SideNavigation from '../components/common/SideNavigation';
+import DashboardTopNavigation from '../components/common/DashboardTopNavigation';
 
 const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -28,7 +31,7 @@ const ProtectedRoute = () => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      await refreshAccessToken()
+      setIsAuthenticated(false);
     }
   };
 
@@ -47,7 +50,32 @@ const ProtectedRoute = () => {
     return <div>Loading...</div>;
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+  // return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+  return isAuthenticated ? (
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      {/* Persistent Side Navigation */}
+      <SideNavigation />
+
+      {/* Main Content Area */}
+      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+        {/* Top Navigation */}
+        <DashboardTopNavigation />
+
+        {/* Content Wrapper */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            backgroundColor: "#f5f5f5",
+            overflow: "auto",
+          }}
+        >
+          <Outlet />
+        </Box>
+      </Box>
+    </Box>
+  ) : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;

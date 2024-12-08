@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../redux/slices/UserSlice';
 import { getLoggedProfile } from '../services/User';
 import { LogoutUser } from '../services/OAuth';
+import { Box } from '@mui/material';
 
 export const Dashboard = () => {
 
@@ -29,9 +30,11 @@ export const Dashboard = () => {
         })
     }
     
-    return <div>
-        Welcome {currentUser.firstname}!
-
-        <button onClick={(eve)=>onClickLogout(eve)}>Logout</button>
-    </div>
+    return (
+        <div>
+            Welcome {currentUser.firstname}!
+  
+            <button onClick={(eve)=>onClickLogout(eve)}>Logout</button>
+        </div>
+      );
 }

@@ -5,7 +5,9 @@ export const oAuthRegisterUser = (tokenData) =>{
     return axios({
         method: 'Post',
         url: 'http://localhost:8000/api/auth/create',
-        data: tokenData
+        headers: {
+            'Authorization': `Bearer ${tokenData.token}`
+        },
     })
 }
 
@@ -13,7 +15,9 @@ export const oAuthLogin = (tokenData) =>{
     return axios({
         method: 'Post',
         url: 'http://localhost:8000/api/auth/google',
-        data: tokenData
+        headers: {
+            'Authorization': `Bearer ${tokenData.token}`
+        },
     }).then((res)=>{
         console.log(res);
         auth.setToken(res.data.access_token);
@@ -25,6 +29,9 @@ export const LogoutUser = () =>{
     return axios({
         method: 'Post',
         url: 'http://localhost:8000/api/auth/logout',
+    }).then((res)=>{
+        auth.removeToken();
+        return res;
     })
 }
 
@@ -43,5 +50,8 @@ export const refreshToken = () => {
         console.log(res);
         auth.setToken(res.data.access_token);
         return res;
+    }).catch((err)=>{
+        auth.removeToken();
+        return err;
     })
 }
