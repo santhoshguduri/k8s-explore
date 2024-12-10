@@ -1,4 +1,4 @@
-import ImageCarousel from '../ImageCarousel';
+import ImageCarousel from '../../../components/common/ImageCarousel';
 import User1 from './ReviewUser1.png';
 import User2 from './ReviewUser2.png';
 import QuoteIcon from './quote-icon.png';

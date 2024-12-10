@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import backImage from './bg1.png';
-import TextFieldButton from "../TextFieldButton";
+import TextFieldButton from "../../../components/common/TextFieldButton";
 
 const Offering = () => {
     return(
