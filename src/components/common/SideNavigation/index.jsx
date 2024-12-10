@@ -8,16 +8,10 @@ import logo from '../../../assets/images/brand-logo.png';
 
 const SideNavigation = () => {
     const sideNavConfig = [
-        { name: "Community", path: "/community", icon: <PersonIcon /> },
-        { name: "Smart Nudges", path: "/smart-nudges", icon: <InsightsIcon /> },
-        { name: "Events", path: "/events", icon: <EventIcon /> },
-        { name: "Lead Magnet Tool", path: "/lead-magnet", icon: <InsightsIcon /> },
-        { name: "Digital Twin", path: "/digital-twin", icon: <PersonIcon /> },
         { name: "Insights", path: "/insights", icon: <InsightsIcon /> },
         { name: "My Profile", path: "/profile", icon: <PersonIcon /> },
         { name: "Settings", path: "/settings", icon: <PersonIcon /> },
         { name: "Subscription", path: "/subscription", icon: <InsightsIcon /> },
-        { name: "Learning Fuzia AI", path: "/learning", icon: <PersonIcon /> },
     ];
   
     return (
