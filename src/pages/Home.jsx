@@ -5,6 +5,9 @@ import FeaturesSection from '../components/common/FeaturesSection';
 import WhyChooseUs from '../components/common/WhyChooseUs';
 import ScaleExperience from '../components/common/ScaleExperience';
 import GrowSustainably from '../components/common/GrowSustainably';
+import Testimonials from '../components/common/Testimonials';
+import Footer from '../components/common/Footer';
+import Offering from '../components/common/Offering';
 
 function Home() {
   return (
@@ -14,6 +17,10 @@ function Home() {
       <WhyChooseUs />
       <ScaleExperience />
       <GrowSustainably />
+      <FeaturesSection />
+      <Testimonials />
+      <Offering/>
+      <Footer />
     </>
   );
 }

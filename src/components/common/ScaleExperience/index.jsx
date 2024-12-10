@@ -2,8 +2,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Box, Typography } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import React from "react";
-import CircleCheck from '../../../assets/images/circle-check.png'
-import bg1 from '../../../assets/images/Home10xBack.png'
+import CircleCheck from './circle-check.png'
+import bg1 from './Home10xBack.png'
 
 export const Frame = () => {
   return (

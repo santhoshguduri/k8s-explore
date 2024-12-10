@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
 import TextFieldButton from "../TextFieldButton";
-import SectionImage from '../../../assets/images/HomeImage1.png';
+import SectionImage from './HomeImage1.png';
 
 const HeroSection = () => {
   return (

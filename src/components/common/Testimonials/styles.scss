@@ -1,0 +1,53 @@
+$green: #4caf50;
+
+.testimonial-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    margin: 10px -10px 10px 20px;
+  
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    //   position: relative;
+        text-align: left;
+        margin-bottom: 20px;
+      .avatar {
+        width: 68px;
+        height: 68px;
+      }
+  
+      .info {
+        margin-left: 12px;
+        flex: 1;
+  
+        .name {
+          font-weight: bold;
+        }
+  
+        .occupation {
+          color: #757575;
+          font-size: 14px;
+        }
+      }
+  
+      .quote {
+        color: $green;
+        font-size: 36px;
+        font-weight: bold;
+        margin-left: auto;
+      }
+    }
+  
+    .content {
+      font-size: 14px;
+      color: #4f4f4f;
+      line-height: 1.5;
+      text-align: left;
+    }
+  }
+  

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import HomeImage2 from '../../../assets/images/HomeImage2.png';
-import Star from '../../../assets/images/star-star.png';
+import HomeImage2 from './HomeImage2.png';
+import Star from './star-star.png';
 
 const WhyChooseUs = () => {
   return (
